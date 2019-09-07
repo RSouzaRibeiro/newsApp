@@ -18,8 +18,9 @@ android {
     }
     buildTypes {
         debug {
-            buildConfigField "String", "SERVER_URL", '"https://api.themoviedb.org/3/"'
-            buildConfigField "String", "API_KEY", '"Bearer 0174862c2d5f6d622dc1e8d63894428c"'
+            buildConfigField "String", "SERVER_URL", '"https://newsapi.org"'
+            buildConfigField "String", "API_KEY", '"33afa90e618540faacff562685960618"'
+            buildConfigField "String", "API_KEY_HEADER_NAME", '"X-Api-Key"'
         }
         release {
             minifyEnabled false
