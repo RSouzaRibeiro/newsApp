@@ -24,10 +24,9 @@ class SourcesViewModel(private val newsRepository: NewsRepository) : BaseViewMod
                 selectedCategory?.name?.toLowerCase()
             )
                 .doOnSubscribe { networkState.postValue(NetworkState.RUNNING) }
-                .doFinally { networkState.value = NetworkState.SUCCESS }
                 .subscribe({
                 if (it.sources.isEmpty()) {
-                    networkState.postValue(NetworkState.ERROR)
+                    networkState.postValue(NetworkState.EMPTY)
                 } else {
                     sources.postValue(it.sources)
                     networkState.postValue(NetworkState.SUCCESS)

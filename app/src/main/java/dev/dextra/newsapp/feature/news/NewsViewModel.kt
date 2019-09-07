@@ -16,13 +16,17 @@ class NewsViewModel(private val newsRepository: NewsRepository) : BaseViewModel(
     fun loadNews(sourceId: String, currentPage: Int = 1) {
         addDisposable(
             newsRepository.getEverything(sourceId, currentPage)
-                .doOnSubscribe { networkState.value = NetworkState.RUNNING }
-                .doFinally { networkState.value = NetworkState.SUCCESS }
+                .doOnSubscribe { networkState.postValue(NetworkState.RUNNING) }
                 .subscribe({ response ->
-                    articles.postValue(response.articles)
+                    if(response.articles.isNotEmpty()){
+                        articles.postValue(response.articles)
+                        networkState.postValue(NetworkState.SUCCESS)
+                    }else{
+                        networkState.postValue(NetworkState.EMPTY)
+                    }
                 },
                     {
-                        networkState.value = NetworkState.ERROR
+                        networkState.postValue(NetworkState.ERROR)
                     })
         )
     }

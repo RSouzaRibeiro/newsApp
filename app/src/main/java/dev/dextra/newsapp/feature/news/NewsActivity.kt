@@ -2,6 +2,7 @@ package dev.dextra.newsapp.feature.news
 
 import android.app.Dialog
 import android.os.Bundle
+import android.view.View
 import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import dev.dextra.newsapp.R
 import dev.dextra.newsapp.api.model.Article
 import dev.dextra.newsapp.api.model.Source
+import dev.dextra.newsapp.base.BaseListActivity
 import dev.dextra.newsapp.base.NetworkState
 import dev.dextra.newsapp.feature.news.adapter.ArticleListAdapter
 import dev.dextra.newsapp.feature.sources.adapter.SourcesListAdapter
@@ -20,17 +22,26 @@ import org.koin.android.ext.android.inject
 
 const val NEWS_ACTIVITY_SOURCE = "NEWS_ACTIVITY_SOURCE"
 
-class NewsActivity : AppCompatActivity() {
+class NewsActivity : BaseListActivity() {
+
+    override val emptyStateTitle: Int = R.string.empty_state_title_articles
+    override val emptyStateSubTitle: Int = R.string.empty_state_subtitle_article
+    override val errorStateTitle: Int = R.string.error_state_title_article
+    override val errorStateSubTitle: Int = R.string.error_state_subtitle_article
+    override val mainList: View
+        get() = news_list
 
     private val newsViewModel: NewsViewModel by inject()
-    private var loading: Dialog? = null
     private var viewAdapter: ArticleListAdapter = ArticleListAdapter()
     private var viewManager: RecyclerView.LayoutManager = GridLayoutManager(this, 1)
     private var currentPage = 1
     private lateinit var mSource: Source
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_news)
+        doBinds()
+        setupRecyclerView()
 
         (intent?.extras?.getSerializable(NEWS_ACTIVITY_SOURCE) as Source).let { source ->
             this.mSource = source
@@ -40,8 +51,14 @@ class NewsActivity : AppCompatActivity() {
         configurationPaginate()
         super.onCreate(savedInstanceState)
 
-        doBinds()
-        setupRecyclerView()
+    }
+
+    private fun setupRecyclerView() {
+        news_list.apply {
+            setHasFixedSize(true)
+            layoutManager = viewManager
+            adapter = viewAdapter
+        }
     }
 
     private fun doBinds() {
@@ -52,13 +69,8 @@ class NewsActivity : AppCompatActivity() {
                 notifyDataSetChanged()
             }
         })
+        newsViewModel.networkState.observe(this, networkStateObserver)
 
-        newsViewModel.networkState.observe(this, Observer { networkState ->
-            when (networkState) {
-                NetworkState.SUCCESS -> hideLoading()
-                NetworkState.RUNNING -> showLoading()
-            }
-        })
     }
 
     private fun configurationPaginate() {
@@ -79,27 +91,11 @@ class NewsActivity : AppCompatActivity() {
         newsViewModel.loadNews(source.id, currentPage)
     }
 
-    fun showLoading() {
-        if (loading == null) {
-            loading = Dialog(this)
-            loading?.apply {
-                requestWindowFeature(Window.FEATURE_NO_TITLE)
-                window.setBackgroundDrawableResource(android.R.color.transparent)
-                setContentView(R.layout.dialog_loading)
-            }
-        }
-        loading?.show()
+    override fun executeRetry() {
+        loadNews(mSource, currentPage)
     }
 
-    fun hideLoading() {
-        loading?.dismiss()
-    }
+    override fun setupLandscape() {}
+    override fun setupPortrait() {}
 
-    fun setupRecyclerView() {
-        news_list.apply {
-            setHasFixedSize(true)
-            layoutManager = viewManager
-            adapter = viewAdapter
-        }
-    }
 }
