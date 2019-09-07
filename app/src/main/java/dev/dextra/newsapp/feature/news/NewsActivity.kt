@@ -1,11 +1,10 @@
 package dev.dextra.newsapp.feature.news
 
 import android.app.Dialog
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import dev.dextra.newsapp.R
 import dev.dextra.newsapp.api.model.Article
 import dev.dextra.newsapp.api.model.Source
@@ -17,9 +16,10 @@ import kotlinx.android.synthetic.main.activity_news.*
 
 const val NEWS_ACTIVITY_SOURCE = "NEWS_ACTIVITY_SOURCE"
 
-class NewsActivity : AppCompatActivity() {
+class NewsActivity :  AppCompatActivity() {
 
     private val newsViewModel = NewsViewModel(NewsRepository(EndpointService()), this)
+    private var loading: Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_news)
@@ -39,14 +39,6 @@ class NewsActivity : AppCompatActivity() {
         newsViewModel.loadNews()
     }
 
-    fun onClick(article: Article) {
-        val i = Intent(Intent.ACTION_VIEW)
-        i.data = Uri.parse(article.url)
-        startActivity(i)
-    }
-
-    private var loading: Dialog? = null
-
     fun showLoading() {
         if (loading == null) {
             loading = Dialog(this)
@@ -64,7 +56,7 @@ class NewsActivity : AppCompatActivity() {
     }
 
     fun showData(articles: List<Article>) {
-        val viewAdapter = ArticleListAdapter(this@NewsActivity, this@NewsActivity, articles)
-        news_list.adapter = viewAdapter
+       news_list.layoutManager =  LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        news_list.adapter =  ArticleListAdapter(articles)
     }
 }
