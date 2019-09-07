@@ -1,8 +1,8 @@
 package dev.dextra.newsapp.base.repository
 
-import dev.dextra.newsapp.API_KEY
-import dev.dextra.newsapp.API_KEY_HEADER_NAME
-import dev.dextra.newsapp.BASE_URL
+
+
+import dev.dextra.newsapp.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -33,7 +33,7 @@ open class EndpointService {
         }
     }
 
-    protected open fun getBaseURL() = BASE_URL
+    protected open fun getBaseURL() = BuildConfig.SERVER_URL
 
     private fun getHttpClient(): OkHttpClient {
         return httpClient ?: let {
@@ -56,7 +56,7 @@ open class EndpointService {
     //add the API_KEY header
     private fun addHeaders(chain: Interceptor.Chain): Response {
         var request = chain.request()
-        request = request.newBuilder().addHeader(API_KEY_HEADER_NAME, API_KEY).build()
+        request = request.newBuilder().addHeader(BuildConfig.API_KEY_HEADER_NAME, BuildConfig.API_KEY).build()
         return chain.proceed(request)
     }
 
