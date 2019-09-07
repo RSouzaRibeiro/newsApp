@@ -1,12 +1,12 @@
 package dev.dextra.newsapp.feature.news.adapter
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
 import dev.dextra.newsapp.R
 import dev.dextra.newsapp.api.model.Article
 import kotlinx.android.synthetic.main.item_article.view.*
@@ -41,6 +41,15 @@ class ArticleListAdapter :
             article_author.text = article.author
             article_date.text = dateFormat.format(parseFormat.parse(article.publishedAt))
 
+
+            Picasso.get()
+                .load(article.urlToImage)
+                .resize(400, 200)
+                .centerInside()
+                .placeholder(R.drawable.placeholder_image)
+                .error(R.drawable.placeholder_image)
+                .into(article_image)
+
             setOnClickListener {
                 val i = Intent(Intent.ACTION_VIEW)
                 i.data = Uri.parse(article.url)
@@ -53,9 +62,6 @@ class ArticleListAdapter :
         dataset.addAll(articles)
     }
 
-    fun clear() {
-        dataset.clear()
-    }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 }
