@@ -17,20 +17,23 @@ class SourcesViewModel(private val newsRepository: NewsRepository) : BaseViewMod
     private var selectedCategory: Category? = null
 
     fun loadSources() {
-        networkState.postValue(NetworkState.RUNNING)
+
         addDisposable(
             newsRepository.getSources(
                 selectedCountry?.name?.toLowerCase(),
                 selectedCategory?.name?.toLowerCase()
-            ).subscribe({
-                sources.postValue(it.sources)
+            )
+                .doOnSubscribe { networkState.postValue(NetworkState.RUNNING) }
+                .doFinally { networkState.value = NetworkState.SUCCESS }
+                .subscribe({
                 if (it.sources.isEmpty()) {
                     networkState.postValue(NetworkState.ERROR)
                 } else {
+                    sources.postValue(it.sources)
                     networkState.postValue(NetworkState.SUCCESS)
                 }
             }, {
-                networkState.postValue(NetworkState.ERROR)
+                    networkState.postValue(NetworkState.ERROR)
             })
         )
     }

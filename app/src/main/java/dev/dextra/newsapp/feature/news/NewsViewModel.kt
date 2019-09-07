@@ -1,31 +1,29 @@
 package dev.dextra.newsapp.feature.news
 
-import dev.dextra.newsapp.api.model.Source
+import androidx.lifecycle.MutableLiveData
+import dev.dextra.newsapp.api.model.Article
 import dev.dextra.newsapp.api.repository.NewsRepository
 import dev.dextra.newsapp.base.BaseViewModel
+import dev.dextra.newsapp.base.NetworkState
 
 
-class NewsViewModel(
-    private val newsRepository: NewsRepository,
-    private val newsActivity: NewsActivity
-) : BaseViewModel() {
+class NewsViewModel(private val newsRepository: NewsRepository) : BaseViewModel() {
 
-    private var source: Source? = null
+    val articles = MutableLiveData<List<Article>>()
+    val networkState = MutableLiveData<NetworkState>()
 
-    fun configureSource(source: Source) {
-        this.source = source
-    }
 
-    fun loadNews() {
-        newsActivity.showLoading()
+    fun loadNews(sourceId: String, currentPage: Int = 1) {
         addDisposable(
-            newsRepository.getEverything(source!!.id).subscribe({ response ->
-                newsActivity.showData(response.articles)
-                newsActivity.hideLoading()
-            },
-                {
-                    newsActivity.hideLoading()
-                })
+            newsRepository.getEverything(sourceId, currentPage)
+                .doOnSubscribe { networkState.value = NetworkState.RUNNING }
+                .doFinally { networkState.value = NetworkState.SUCCESS }
+                .subscribe({ response ->
+                    articles.postValue(response.articles)
+                },
+                    {
+                        networkState.value = NetworkState.ERROR
+                    })
         )
     }
 }

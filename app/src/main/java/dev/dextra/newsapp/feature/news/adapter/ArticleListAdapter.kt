@@ -14,12 +14,14 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ArticleListAdapter(val articles: List<Article>) :
+class ArticleListAdapter :
     RecyclerView.Adapter<ArticleListAdapter.ViewHolder>() {
 
     private val dateFormat =
         SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.SHORT)
     private val parseFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+
+    private val dataset: ArrayList<Article> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_article, parent, false)
@@ -27,11 +29,11 @@ class ArticleListAdapter(val articles: List<Article>) :
     }
 
     override fun getItemCount(): Int {
-        return articles.size
+        return dataset.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        var article = articles[position]
+        var article = dataset[position]
 
         holder.itemView.apply {
             article_name.text = article.title
@@ -45,6 +47,14 @@ class ArticleListAdapter(val articles: List<Article>) :
                 context.startActivity(i)
             }
         }
+    }
+
+    fun add(articles: List<Article>) {
+        dataset.addAll(articles)
+    }
+
+    fun clear() {
+        dataset.clear()
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)

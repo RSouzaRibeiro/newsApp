@@ -55,14 +55,14 @@ class SourcesActivity : BaseListActivity(), SourcesListAdapter.SourceListAdapter
     }
 
     private fun loadSources() {
-        sourcesViewModel.sources.observe(this, Observer {
+        sourcesViewModel.sources.observe(this, Observer { listOfSources ->
             viewAdapter.apply {
                 clear()
                 notifyDataSetChanged()
-                add(it)
+                add(listOfSources)
                 notifyDataSetChanged()
                 sources_list.scrollToPosition(0)
-                app_bar.setExpanded(true)
+                app_bar.setExpanded(false)
             }
         })
 
