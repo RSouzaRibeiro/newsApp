@@ -46,7 +46,7 @@ class SourcesViewModelTest : BaseTest() {
 
         viewModel.loadSources()
 
-        assert(viewModel.sources.value?.size == 0)
+        assert(viewModel.sources.value?.size == null)
         assertEquals(NetworkState.EMPTY, viewModel.networkState.value)
     }
 
@@ -72,7 +72,7 @@ class SourcesViewModelTest : BaseTest() {
 
         viewModel.changeCountry(Country.BR)
 
-        assert(viewModel.sources.value?.size == 0)
+        assert(viewModel.sources.value?.size == null)
         assertEquals(NetworkState.EMPTY, viewModel.networkState.value)
 
         viewModel.changeCountry(Country.ALL)
@@ -94,7 +94,7 @@ class SourcesViewModelTest : BaseTest() {
 
         viewModel.changeCategory(Category.BUSINESS)
 
-        assert(viewModel.sources.value?.size == 0)
+        assert(viewModel.sources.value?.size == null)
         assertEquals(NetworkState.EMPTY, viewModel.networkState.value)
 
         viewModel.changeCategory(Category.ALL)
@@ -102,5 +102,19 @@ class SourcesViewModelTest : BaseTest() {
         assert(viewModel.sources.value?.size == 136)
         assertEquals(NetworkState.SUCCESS, viewModel.networkState.value)
 
+    }
+
+    @Test
+    fun testChangeCategory(){
+        viewModel.changeCategory(Category.HEALTH)
+
+        assertEquals(Category.HEALTH, viewModel.selectedCategory)
+    }
+
+    @Test
+    fun testChangeCountry(){
+        viewModel.changeCountry(Country.BR)
+
+        assertEquals(Country.BR, viewModel.selectedCountry)
     }
 }

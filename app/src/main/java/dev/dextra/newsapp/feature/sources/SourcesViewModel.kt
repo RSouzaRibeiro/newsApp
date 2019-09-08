@@ -13,8 +13,8 @@ class SourcesViewModel(private val newsRepository: NewsRepository) : BaseViewMod
     val sources = MutableLiveData<List<Source>>()
     val networkState = MutableLiveData<NetworkState>()
 
-    private var selectedCountry: Country? = null
-    private var selectedCategory: Category? = null
+     var selectedCountry: Country? = null
+     var selectedCategory: Category? = null
 
     fun loadSources() {
 
