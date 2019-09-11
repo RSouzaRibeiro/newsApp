@@ -1,20 +1,20 @@
 package dev.dextra.newsapp.feature.news
 
 import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.*
 import dev.dextra.newsapp.R
 import dev.dextra.newsapp.api.model.Article
 import dev.dextra.newsapp.api.model.Source
 import dev.dextra.newsapp.base.BaseListActivity
 import dev.dextra.newsapp.base.NetworkState
 import dev.dextra.newsapp.feature.news.adapter.ArticleListAdapter
+import dev.dextra.newsapp.feature.news.adapter.DragManageAdapter
 import dev.dextra.newsapp.feature.sources.adapter.SourcesListAdapter
 import kotlinx.android.synthetic.main.activity_news.*
 import org.koin.android.ext.android.inject
@@ -58,7 +58,17 @@ class NewsActivity : BaseListActivity() {
             setHasFixedSize(true)
             layoutManager = viewManager
             adapter = viewAdapter
+
+            val dividerItemDecoration = DividerItemDecoration(context , LinearLayoutManager.VERTICAL)
+            addItemDecoration(dividerItemDecoration)
+
+            val callback = DragManageAdapter(viewAdapter, context,
+                ItemTouchHelper.UP.or(ItemTouchHelper.DOWN), ItemTouchHelper.LEFT.or(ItemTouchHelper.RIGHT))
+            val helper = ItemTouchHelper(callback)
+            helper.attachToRecyclerView(news_list)
         }
+
+
     }
 
     private fun doBinds() {
@@ -99,3 +109,6 @@ class NewsActivity : BaseListActivity() {
     override fun setupPortrait() {}
 
 }
+
+
+

@@ -62,6 +62,20 @@ class ArticleListAdapter :
         dataset.addAll(articles)
     }
 
+    fun swapItems(fromPosition: Int, toPosition: Int) {
+        if (fromPosition < toPosition) {
+            for (i in fromPosition until toPosition) {
+                dataset.set(i, dataset.set(i+1, dataset.get(i)))
+            }
+        } else {
+            for (i in fromPosition..toPosition + 1) {
+                dataset.set(i, dataset.set(i-1, dataset.get(i)))
+            }
+        }
+
+        notifyItemMoved(fromPosition, toPosition)
+    }
+
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 }
